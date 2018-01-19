@@ -9,7 +9,8 @@ import java.sql.*;
  * Created by Gerwa on 2017/9/11.
  */
 public class LoginThread extends Thread {
-    static final String databasePath = "jdbc:sqlite://D:/PycharmProjects/GwentRegisterServer/db.sqlite3";
+    static final String serverVersion = "v1.0";
+    static final String databasePath = "jdbc:sqlite:db.sqlite3";
 
     private Socket clientSocket;
     private PlayerAssets playerAssets;
@@ -53,10 +54,17 @@ public class LoginThread extends Thread {
             JSONObject loginInfo = new JSONObject(in.readLine());
             username = loginInfo.getString("username");
             String password = loginInfo.getString("password");
+            String version = loginInfo.getString("version");
 
             JSONObject replyInfo = new JSONObject();
 
-            if (isPlayerExits(username, password)) {
+            if (!version.equals(serverVersion)) {
+                replyInfo.put("validation", false);
+                replyInfo.put("reason", String.format("incorrect version, your version is %s but server's version is %s.",
+                        version, serverVersion));
+                out.write(replyInfo + "\n");
+                out.flush();
+            } else if (isPlayerExits(username, password)) {
                 if (playerAssets.getPlayerMap().containsKey(username)) {//already have one
                     Player existingPlayer = playerAssets.getPlayerMap().get(username);
                     if (existingPlayer.getGame() != null) {//resume game
@@ -82,16 +90,15 @@ public class LoginThread extends Thread {
                     } else {
 
                         System.out.println(username + " duplicate login");
-                        playerAssets.removePlayerByName(username);//remove the prelogin player
+//                        playerAssets.removePlayerByName(username);//remove the prelogin player
 
-                        putPlayerInHall(replyInfo, in, out, username);
-                        /*
+//                        putPlayerInHall(replyInfo, in, out, username);
+
                         replyInfo.put("validation", false);
                         replyInfo.put("reason", "user has already logged in.");
                         out.write(replyInfo + "\n");
                         out.flush();
                         //respond to player
-                        */
                     }
                 } else {//normal way
 

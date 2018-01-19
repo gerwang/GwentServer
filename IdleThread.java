@@ -30,12 +30,16 @@ class IdleThread extends Thread {
                 }
                 input = new JSONObject(line);
                 command = input.getString("command");
-            } catch (JSONException | IOException e) {
+            } catch (Exception e) {
+                System.out.println("catched");
                 e.printStackTrace();
                 playerAssets.removePlayerByName(player.getName());//disconnect the player
                 player.closeIODevices();
                 return;
             }
+
+            System.out.println("running here");
+
             System.out.println("readed " + player.getName() + "'s data, command " + command);
 
             JSONObject output = new JSONObject();
@@ -85,14 +89,15 @@ class IdleThread extends Thread {
                         }
                     } else {
                         try {
-                            playerAssets.removePlayerFromHall(player.getName());//remove player from hall
-                            player.setStatus(Player.Status.Inviting);
+                            System.out.println(player.getInviters().size());
+//                            playerAssets.removePlayerFromHall(player.getName());//remove player from hall
+//                            player.setStatus(Player.Status.Inviting);
 
-                            String inviterName = player.getInviters().poll();
+                            String inviterName = player.getInviters().take();
                             output.put("command", "respond_isinvited");
                             output.put("isinvited", true);
                             output.put("inviter", inviterName);
-                        } catch (JSONException e) {
+                        } catch (JSONException | InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
@@ -147,8 +152,8 @@ class IdleThread extends Thread {
                     }
                     if (playerAssets.getHallPlayers().contains(targetName)) {//target player really exists in hall
 
-                        playerAssets.removePlayerFromHall(player.getName());//now the player is not in the hall
-                        player.setStatus(Player.Status.Inviting);
+//                        playerAssets.removePlayerFromHall(player.getName());//now the player is not in the hall
+//                        player.setStatus(Player.Status.Inviting);
 
                         Player targetPlayer = playerAssets.getPlayerMap().get(targetName);//we've check target player's existense in the hall just before
                         try {

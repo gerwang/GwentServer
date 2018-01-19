@@ -138,6 +138,7 @@ public class Game extends Thread {
                             if (line == null) {
                                 throw new JSONException("player send empty line");
                             }
+                            System.out.println(gamers[currentPlayer].getName() + "transmits " + line);
                             input = new JSONObject(line);
                             command = input.getString("command");
                         } catch (JSONException | IOException e) {
@@ -231,7 +232,7 @@ public class Game extends Thread {
                 R[i] = (int) (R[i] + K * (S[i] - E[i]));
                 statement.executeUpdate("UPDATE gwent_player SET rating=" + R[i] + " WHERE username='" + gamers[i].getName() + "'");
             }
-            connection.commit();
+//            connection.commit();
             statement.close();
             connection.close();
 
@@ -308,6 +309,8 @@ public class Game extends Thread {
             pender.writeAndflush(output + "\n");
         } catch (IOException e) {
             e.printStackTrace();
+            playerAssets.removePlayerByName(pender.getName());
+            pender.closeIODevices();
             return; //discard the player
         }
 
@@ -357,6 +360,7 @@ public class Game extends Thread {
     }
 
     private void removeGamer(Player gamer) {
+        System.out.println("removing gamer" + gamer);
         gamer.setStatus(Player.Status.Offline);
         gamer.closeIODevices();
     }

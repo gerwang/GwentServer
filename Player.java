@@ -20,7 +20,7 @@ class Player {
 
 
     public enum Status {
-        Idle, Matching, Inviting, Playing, Offline
+        Idle, Matching, Playing, Offline
     }
 
     void setGame(Game game) {
