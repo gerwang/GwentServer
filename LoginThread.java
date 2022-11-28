@@ -64,7 +64,7 @@ public class LoginThread extends Thread {
                         version, serverVersion));
                 out.write(replyInfo + "\n");
                 out.flush();
-            } else if (isPlayerExits(username, password)) {
+            } else if (isPlayerExists(username, password)) {
                 if (playerAssets.getPlayerMap().containsKey(username)) {//already have one
                     Player existingPlayer = playerAssets.getPlayerMap().get(username);
                     if (existingPlayer.getGame() != null) {//resume game
@@ -156,7 +156,7 @@ public class LoginThread extends Thread {
         System.out.println("login thread finished");
     }
 
-    private boolean isPlayerExits(String username, String password) {
+    private boolean isPlayerExists(String username, String password) {
         try {
             Class.forName("org.sqlite.JDBC");
             Connection connection = DriverManager.getConnection(databasePath);

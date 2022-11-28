@@ -40,13 +40,11 @@ public class MatchHandler extends Thread {
                         if (!heartbeat.getString("command").equals("heartbeat_response")) {
                             throw new IOException("mismatch network message");
                         }
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         player.closeIODevices();
                         playerAssets.removePlayerByName(playerName[i]);
                         playerName[i] = null;
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
                 }
             }
